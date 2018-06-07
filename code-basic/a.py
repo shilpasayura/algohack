@@ -1,0 +1,5 @@
+x=int(input())
+print("{0:b}".format(x))
+print(format(x,'*<8b'))
+print(format(x, '.6f')+"$")	
+print("^{:e}^^".format(x))

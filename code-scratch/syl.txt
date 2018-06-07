@@ -1,0 +1,145 @@
+Scratch Screen Layout
+
+Motion & Sound
+
+on click meow
+on click move x
+on space move -x
+for ever move x
+if edge bounce
+set rotation style
+pint towards mouse
+
+turn 15 degrees
+drumdancer move x , drum , move -x
+glide 1 sec to 
+set pencolor
+pen down
+
+
+Stage (actors act and information )
+•Sprite is a name for actor.
+•Instruction menus
+•A script tells the actor what to do.
+•Programming area 
+
+*The first instruction is done first
+•The second instruction is done second
+•The last instruction is done last.
+
+exersize
+Edit the coordinates and click to see the sprite’s position
+•A) goto x=200, y=0
+•B) goto x=-200, y=0
+•C) goto x=200, y=-100
+Where does the cat go?
+
+
+Create a script to glide the sprite along the sides of a triangle. The first vertex  is (-100, -100). The second vertex is (200, -100). The third vertex is (50, 100). 
+Change the speed of gliding and run again.
+
+
+Drawing a Circle
+
+Start at ( -100, 100 )
+•Move 200 steps
+•Turn right 90 degrees
+•Move 200 steps
+•Turn right 90 degrees
+•Move 200 steps
+•Turn right 90 degrees
+•Move 200 steps
+
+say 
+think
+Sprite starts at home base at x=-100; y=-50
+•Sprite says “I hit the ball” for 2 seconds
+•Sprite runs (east) 200 steps to 1st base
+•Sprite changes color
+•Sprite runs 200 steps to 2nd base (north: left turn from 1st base)
+•Sprite doubles size
+•Sprite says “I hit a double” for 5 seconds
+
+repeat 10 Say “AAAHHHH” for a short time Then grow the cat 5 bigger , 
+Repeat 20 times Briefly say “CCHHEEEW” Then shrink the cat’s size by 5
+
+repeat 10
+pendown on space, move, rotate, penup on d, pendown
+
+
+We can randomly set the location of the bat so it will “flutter”.
+•Set X to a random number
+•Set Y to a random number
+•Move the bat to location (X,Y)
+•Of course, the bat should remain on stage!
+
+We can randomly set the location of the bat so it will “flutter”.
+•Set X to a random number
+•Set Y to a random number
+•Move the bat to location (X,Y)
+
+
+droping
+flying on arrow keys
+
+
+set x y
+draw a  tranigle
+draw a squire
+
+xy system
+
+Animation
+switch costume
+
+change color effect
+change size
+
+How computers work
+c=1+2
+input- process - Memory - output- 
+how computer keep data 0 and 1 , transister
+math
+operatos + - * /
+C=2+4*5 importance of ()
+operater presedence
+toffe proble 5 toffes at 2 and 4 chocs at 4
+how much balance for 1000
+
+input
+what is your name?
+ask and wait
+answer
+join and say name
+what is your age
+
+Write a program to take inputs A and B calculATE 	average 
+write a program to calculate area of a rectangle 
+write a program to calculate perimeter of a rectangle
+write a program to calculate area of a traingle
+
+toffe calculator
+
+two sprites talking - timing problem
+status variable talk
+if then
+creating a fun story 
+
+if then else
+
+
+adding effects to sprite
+
+
+
+
+
+
+
+
+
+
+
+
+
+

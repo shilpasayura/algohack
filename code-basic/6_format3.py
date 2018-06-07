@@ -1,0 +1,5 @@
+a=int(input())
+print(format(a,'#>5b'))
+print(format(a,'*<8b'))
+print(format(a,'$<10f'))
+print(format(a,'^^15e'))
