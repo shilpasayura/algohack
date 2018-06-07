@@ -1,5 +1,5 @@
 # algohack
-AlgoHACK-  local language programming 
+AlgoHACK-  local language compauter science and programming for young people.
 
 Algohack project plans to write a digital book of modern computer science in local langauges and conduct series of workshops to introduce Linux, Algorithmic Programing, IoT and Information Security to school students targeting advanced future careers in technology sector. 
 
