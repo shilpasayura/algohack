@@ -52,7 +52,7 @@ def insert_spaces(cursor,nlect,nlabs,gid,semid, delay):
     
 if __name__ == "__main__":
     delay=0.05
-    conn=xdb.opendb('genetic44.db')
+    conn=xdb.opendb('genetic56.db')
     cursor =conn.cursor() # create a cursor object
     success=crt_spaces_table(cursor, True) # create spaces table
     #dedicated lecture hall, lab for group and semaster

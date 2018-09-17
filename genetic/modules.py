@@ -59,7 +59,7 @@ def insert_modules(cursor,n,delay,gid,semid):
 if __name__ == "__main__":
 
     delay=0.05
-    conn=xdb.opendb('genetic4461.db')
+    conn=xdb.opendb('genetic56.db')
     cursor =conn.cursor() # create a cursor object
     success=crt_modules_table(cursor,True) # create spaces table
     success, count =insert_modules(cursor,11,delay,1,1) # generate modules

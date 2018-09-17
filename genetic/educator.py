@@ -52,7 +52,7 @@ def insert_educators(cursor,n,delay):
 if __name__ == "__main__":
     
     delay=0.05
-    conn=xdb.opendb('genetic4461.db')
+    conn=xdb.opendb('genetic56.db')
     cursor =conn.cursor() # create a cursor object
     success=crt_educators_table(cursor,True) # create spaces table
     success, count =insert_educators(cursor,11,delay) # generate modules

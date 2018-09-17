@@ -48,7 +48,8 @@ def crt_semaster_calander_table(cursor):
 	fitness INTEGER,
 	genetics varchar(100),
         status  INTEGER,
-	adate	date);
+	adate	date,
+	sptype INTEGER);
       '''
     success, count=xdb.runSQL(cursor, sql)
     return success
@@ -114,7 +115,7 @@ def pick_alternative_educator(cursor, mid,no_eid,fails, alt_eid_hits):
     eid=educators[0][2]
     return eid
         
-def book_calender(cursor,gid,semid,spid,nsession,mid,eid,nlesson,mid_hits,eid_hits,space_hits):
+def book_calender(cursor,gid,semid,spid,sptype,nsession,mid,eid,nlesson,mid_hits,eid_hits,space_hits):
     # is spid, nday, nession, eid taken
     keep_trying=True
     can_book=False
@@ -175,8 +176,8 @@ def book_calender(cursor,gid,semid,spid,nsession,mid,eid,nlesson,mid_hits,eid_hi
         
     status=1 # booked
         
-    sql='INSERT INTO semaster_calander (gid, semid, spid, nsession, eid, mid, nlesson, nday, nweek, nweekday, sesid, status) VALUES ('
-    sql=sql+ '{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}'.format(gid, semid, spid, nsession, eid, mid, nlesson, nday, nweek, nweekday, sesid,status) +');'
+    sql='INSERT INTO semaster_calander (gid, semid, spid, sptype, nsession, eid, mid, nlesson, nday, nweek, nweekday, sesid, status) VALUES ('
+    sql=sql+ '{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}'.format(gid, semid, spid, sptype, nsession, eid, mid, nlesson, nday, nweek, nweekday, sesid,status) +');'
     print(sql)
     cursor.execute(sql) 
     return True, space_ok, educator_ok, group_ok
@@ -190,7 +191,7 @@ def convert_session(nsession):
         nday=(nsession//4) +1
 
     if (nsession % 20==0):
-        nweek=nsession//20
+        nweek=nsession/20
     else:
         nweek=(nsession//20) +1
 
@@ -201,7 +202,7 @@ def convert_session(nsession):
     return nday,nweek,nweekday,sesid
 
 
-def create_semaster_calander(cursor,n,delay,gid,semid):   
+def create_semaster_calander(cursor,delay,gid,semid):   
     sql="SELECT * FROM semaster_calander LIMIT 1";
     success, count=xdb.runSQL(cursor, sql)
     
@@ -263,7 +264,7 @@ def create_semaster_calander(cursor,n,delay,gid,semid):
 
                 #try first session
                 # returns success, space_ok, educator_ok, group_ok
-                success,sp,ed,gr=book_calender(cursor,gid,semid,spid,nsession,mid,eid,lesson,mid_hits,eid_hits,space_hits) # some extra info
+                success,sp,ed,gr=book_calender(cursor,gid,semid,spid,sptype,nsession,mid,eid,lesson,mid_hits,eid_hits,space_hits) # some extra info
               
                 if (success):
                     print("Success ", spid,nsession,eid, mid, lesson)
@@ -325,8 +326,8 @@ def create_semaster_calander(cursor,n,delay,gid,semid):
 
                 #try first session
                 # returns success, space_ok, educator_ok, group_ok
-                success,sp,ed,gr=book_calender(cursor,gid,semid,spid,nsession,mid,eid,lesson,mid_hits,eid_hits,space_hits) # some extra info
-         
+                success,sp,ed,gr=book_calender(cursor,gid,semid,spid,sptype,nsession,mid,eid,lesson,mid_hits,eid_hits,space_hits) # some extra info
+                
                 if (success):
                     print("Success ", spid,nsession,eid, mid, lesson)
                     
@@ -355,22 +356,172 @@ def create_semaster_calander(cursor,n,delay,gid,semid):
 
                 if nsession > 300:
                    #nsession=280
-                    pass
-                   
+                   pass
+                
                 time.sleep(delay/5)     
         # week
     # module
+    # not all sessions fall with in 300
+                
+def get_free_sessions(cursor, gid,semid):
+    #return un allocated sessions
+    
+    free_sessions=[]
+    sql='''SELECT * FROM semaster_calander AS SC INNER JOIN spaces ON SC.spid=spaces.spid
+        WHERE SC.gid={} and SC.semid={} and SC.status=1 and nsession <= 300 order by nsession;
+        '''
+    #print(sql)
+    sql=sql.format(gid,semid)
+    
+    cursor.execute(sql)
+    cal_items = cursor.fetchall()
+    free_sessions=[i+1 for i in range(300)]
+    
+    for i in range(len(cal_items)):
+        ns=cal_items[i][4]
+        if ns in free_sessions:
+            free_sessions.remove(ns)
+
+    return free_sessions
+
+def last_good_session(cursor,gid, semid, sptype,this_mid, this_eid, this_session, this_nlesson):
+    #what is the last lesson's nsession before this
+    sql='''SELECT * FROM semaster_calander AS SC INNER JOIN spaces ON SC.spid=spaces.spid
+        WHERE SC.gid={} and SC.semid={}  and SC.mid={} and SC.eid={} and SC.nlesson < {} and SC.status=1  and spaces.sptype={}  order by nsession desc;
+        '''
+    sql=sql.format(gid,semid, this_mid, this_eid, this_nlesson, sptype)
+    #print(sql)
+  
+    cursor.execute(sql)
+    prev_items = cursor.fetchall()
+    if not (prev_items==[]):
+        last_session=prev_items[0][4]
+    else:
+        last_session=0
+    return last_session
+
+    
+def fix_semaster_calendar(cursor,gid, semid, sptype):
+    sql='''SELECT * FROM semaster_calander AS SC INNER JOIN spaces ON SC.spid=spaces.spid
+        WHERE SC.gid=1 and SC.semid=1 and SC.nsession > 300 and SC.status=1  and spaces.sptype={}  order by nsession;
+        '''
+    sql=sql.format(sptype)
+    #print (sql)
+    cursor.execute(sql)
+    over300_calitems = cursor.fetchall()
+    print("sessions to fix", len(over300_calitems))
+
+    if not over300_calitems==[]:
+        print ("Some Sessions over 300. Fixing ....")
+        
+        free_sessions=get_free_sessions(cursor,gid, semid)
+        #print(free_sessions)
+        if (free_sessions==[]):
+            return free_sessions
+        
+        done_sessions=[]
+        
+        num_over300=len(over300_calitems)
+
+        for n in range(num_over300):
+
+            updating_spclid=over300_calitems[n][0]
+            this_session= over300_calitems[n][4]
+            this_eid=over300_calitems[n][6]
+            this_mid=over300_calitems[n][7]
+            this_nlesson=over300_calitems[n][8]
+            this_spid=over300_calitems[n][3]
+            this_sptype=over300_calitems[n][16]
+            status=1
+            
+            
+            # now we need last good session below this_lesson
+            print("Trying to fix ", this_session, " at " , updating_spclid)
+            last_nlesson=last_good_session(cursor,gid, semid, sptype,this_mid, this_eid, this_session, this_nlesson)
+
+            if (last_nlesson == 0 or  last_nlesson >= 300): # no use skip
+                print ("Skipping " , updating_spclid,this_session)
+                continue # try next
+
+            print("Last and Free Sessions ", last_nlesson, free_sessions)
+            available_session=0
+
+            for free in free_sessions:
+                if free > last_nlesson:
+                    available_session=free            
+                    break
+                
+            if available_session==0:
+                continue
+            
+            if available_session > 0:
+                nday,nweek,nweekday,sesid=convert_session(available_session)
+                sql='UPDATE semaster_calander SET nsession={}, nday={}, nweek={}, nweekday={}, sesid={} WHERE spclid={}'
+                sql=sql.format(available_session,nday,nweek,nweekday,sesid,updating_spclid)
+                print(sql)
+                cursor.execute(sql)
+                print ("Updated" , updating_spclid, this_session,available_session)
+                free_sessions.remove(available_session)
+                done_sessions.append((updating_spclid,this_session, available_session))
+            
+            #xdb.commit(conn)
+            
+        return done_sessions
+
+def reorder_semaster_calendar(cursor,delay, gid, semid):
+    
+    sql='SELECT spclid FROM semaster_calander order by nsession;'
+    cursor.execute(sql)
+    cal_items = cursor.fetchall()
+    new_session=1
+    for item in cal_items:
+        updating_spclid=item[0]
+        nday,nweek,nweekday,sesid=convert_session(new_session)
+        #print(new_session, nday,nweek,nweekday,sesid)
+        sql='UPDATE semaster_calander SET nsession={}, nday={}, nweek={}, nweekday={}, sesid={} WHERE spclid={}'
+        sql=sql.format(new_session,nday,nweek,nweekday,sesid,updating_spclid)
+        cursor.execute(sql)
+        print(new_session, " done")
+        new_session+=1
+        time.sleep(delay/5)
+        
             
 if __name__ == "__main__":
     
     delay=0.05
-    conn=xdb.opendb('genetic44.db')
+    conn=xdb.opendb('genetic56.db')
     cursor =conn.cursor() # create a cursor object
+    
     success=crt_semaster_calander_table(cursor)
     # create cal for gid=1 and semid=1
-    create_semaster_calander(cursor,1,delay,1,1) # generate modules
+    create_semaster_calander(cursor,delay,1,1) # generate modules
     xdb.commit(conn)
+    
+    #disp_semaster_calander(cursor)
+    f=get_free_sessions(cursor, 1,1)
+    print("Free Sessions")
+
+    for e in f:
+        print(e)
+   
+    done=fix_semaster_calendar(cursor, 1,1,1)
+    xdb.commit(conn)
+
+    print("Fixed Lectures ", done)
+
+    done=fix_semaster_calendar(cursor, 1,1,2)
+    xdb.commit(conn)
+    
+    print("Fixed Lab Works", done)
+
+    
+    print("Re-ordering Calender")
+        
+    reorder_semaster_calendar(cursor,delay,1, 1)
+    xdb.commit(conn)
+
     success=crt_view_semaster_calender(cursor)
     xdb.commit(conn)
-    disp_semaster_calander(cursor)
+    
     xdb.closedb(conn)
+

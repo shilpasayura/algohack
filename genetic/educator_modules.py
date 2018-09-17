@@ -336,7 +336,7 @@ def balance_educator_modules(cursor,gid,semid):
 if __name__ == "__main__":
 
     delay=0.05
-    conn=xdb.opendb('genetic4461.db')
+    conn=xdb.opendb('genetic56.db')
     cursor =conn.cursor() # create a cursor object
 
     success=crt_educator_modules_table(cursor,True) # create spaces table

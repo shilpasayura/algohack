@@ -41,7 +41,7 @@ def insert_sessions(cursor,n,delay):
 
 if __name__ == "__main__":
     delay=0.05
-    conn=xdb.opendb('genetics2111.db')
+    conn=xdb.opendb('genetics56.db')
     cursor =conn.cursor() # create a cursor object
     success=crt_sessions_table(cursor, True) # create spaces table
     success, count =insert_sessions(cursor,1,delay) # generate modules

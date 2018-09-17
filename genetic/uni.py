@@ -12,10 +12,11 @@ import educator_modules
 import spaces
 import sessions
 import semaster_calander
+import stats
 
 delay=0.05 # 50 ms
 #open gentic database
-conn=xdb.opendb('genetic44.db')
+conn=xdb.opendb('genetic56.db')
 cursor =conn.cursor() # create a cursor object
 # gid : groupid 1
 # semid, semasterid 1
@@ -64,13 +65,32 @@ print ('Improved View Done--------------------')
 success=semaster_calander.crt_semaster_calander_table(cursor)
 
 # create cal for gid=1 and semid=1
-success=semaster_calander.create_semaster_calander(cursor,1,delay,1,1) # generate modules
+success=semaster_calander.create_semaster_calander(cursor,delay,1,1) # generate modules
 xdb.commit(conn)
 print ('Semaster Calender Created --------------------')
-success=semaster_calander.crt_view_semaster_calender(cursor)
-print ('Semaster Calender View Done--------------------')
-semaster_calander.disp_semaster_calander(cursor)
-print ('Done! thank you for waiting')
+
+done=semaster_calander.fix_semaster_calendar(cursor, 1,1,1)
 xdb.commit(conn)
+print ('Semaster Calender Fixed 1 1 1 --------------------')
+
+done=semaster_calander.fix_semaster_calendar(cursor, 1,1,2)
+xdb.commit(conn)
+print ('Semaster Calender Fixed 1 1 2 --------------------')
+
+
+semaster_calander.reorder_semaster_calendar(cursor,delay,1, 1)
+xdb.commit(conn)
+
+print ('Semaster Calender Re-ordered --------------------')
+success=semaster_calander.crt_view_semaster_calender(cursor)
+xdb.commit(conn)
+print ('Semaster Calender View Done--------------------')
+
+semaster_calander.disp_semaster_calander(cursor)
+print ('')
+stats.semaster_stats(cursor,1,1)
+
+print ('Done! thank you for waiting')
+
 if (conn !=None):
     xdb.closedb(conn)
