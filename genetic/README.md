@@ -23,10 +23,8 @@ sessions.py - Sessions in a day
 space_calender.py - Semaster Plan
 stats.py - Statistical Analysis
 
-Mini Project Team
-Thilni Weerasinghe  
+ 
 Niranjan Meegammanana
 
-Website
-https://girls-intech.blogspot.com
+
 http://shilpasayura.org
